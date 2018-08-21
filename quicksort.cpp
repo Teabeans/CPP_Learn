@@ -67,6 +67,8 @@
 // The sorter is implemented here as a class. This is not necessary, and code
 // logic for the sort may be refactored as static methods.
 //
+// Random number generation is currently pseudo-random.
+//
 
 //-----------------------------------------------------------------------------|
 // LICENSE
