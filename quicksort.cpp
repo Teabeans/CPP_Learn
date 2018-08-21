@@ -21,6 +21,8 @@
 // Template author:
 // Tim Lum (github.com/Teabeans/Template_Cpp)
 //
+// Refer to ACKNOWLEDGEMENTS.txt
+//
 
 //-----------------------------------------------------------------------------|
 // FILE DESCRIPTION
