@@ -26,45 +26,47 @@
 // FILE DESCRIPTION
 //-----------------------------------------------------------------------------|
 //
-// <Short explanation of file purpose and function>
-//
-// (If this file contains 'main()' ) Program Description:
-// <Explanation of overall program purpose and function>
+// Implementation of the quicksort function
 //
 
 //-----------------------------------------------------------------------------|
 // PACKAGE FILES
 //-----------------------------------------------------------------------------|
 //
-// <Files needed to run this program>
+// None
 //
 
 //-----------------------------------------------------------------------------|
 // USAGE
 //-----------------------------------------------------------------------------|
 //
-// <Description of setup and usage>
+// Compile in Linux with:
+// $ g++ --std=c++11 quicksort.cpp -o quicksort
+//
+// Run in Linux after compilation with:
+// $ ./quicksort
 //
 
 //-----------------------------------------------------------------------------|
 // ERRATA
 //-----------------------------------------------------------------------------|
 //
-// <Any other comments>
+// The sorter is implemented here as a class. This is not necessary, and code
+// logic may be refactored as static methods.
 //
 
 //-----------------------------------------------------------------------------|
 // LICENSE
 //-----------------------------------------------------------------------------|
 // 
-// <License> or <Refer to LICENSE.txt>
+// Refer to LICENSE.txt
 //
 
 //-----------------------------------------------------------------------------|
 // CODE STANDARDS
 //-----------------------------------------------------------------------------|
 //
-// <Standards> or <Refer to CODESTANDARDS.txt>
+// Refer to CODESTANDARDS.txt
 //
 
 //-----------------------------------------------------------------------------|
@@ -104,7 +106,7 @@
 
 // OTHER
 #include <algorithm>             // http://www.cplusplus.com/reference/algorithm
-#include <chrono>                // http://www.cplusplus.com/reference/chrono/
+// #include <chrono>             // http://www.cplusplus.com/reference/chrono/
 // #include <time.h>             // Superceded by <chrono>
 #include <random>                // http://www.cplusplus.com/reference/random/
 #include <string>                // http://www.cplusplus.com/reference/string/
@@ -127,12 +129,11 @@ class quicksorter {
 
    public:
    void quicksort( int* tgtArray, int size );
-
 };
 
 int* makeRandomArray( int size, int min, int max );
-void printHelloWorld( );
 void printArray( std::string title, int* tgtArray, int size );
+void printArraySubset( int* tgtArray, int leftBound, int rightBound );
 void verbosePrint( std::string message );
 void verbosePrintln( std::string message );
 
@@ -140,22 +141,13 @@ void verbosePrintln( std::string message );
 // DEFINES
 //-----------------------------------------------------------------------------|
 
-// #define NDEBUG                // Include for assertions, comment to omit
-#define PI  3.141569
-#define TAU 6.283185
+// #define NDEBUG // Include for assertions, comment to omit
 
 //-----------------------------------------------------------------------------|
 // GLOBAL VARIABLES
 //-----------------------------------------------------------------------------|
 
-bool   VERBOSE    = true;
-bool   DEBUG_MODE = true;
-int    INT_PI     = 3;
-int    INT_TAU    = 6;
-float  FLOAT_PI   = 3.14159265;
-float  FLOAT_TAU  = 6.28318530;
-double DOUBLE_PI  = 3.141592653589793238;
-double DOUBLE_TAU = 6.283185307179586476;
+bool VERBOSE = true; // Enable for verbose prints, disable to quiet
 
 //-----------------------------------------------------------------------------|
 // NAMESPACES
@@ -167,6 +159,8 @@ double DOUBLE_TAU = 6.283185307179586476;
 //-----------------------------------------------------------------------------|
 // PRIVATE CLASS FIELDS
 //-----------------------------------------------------------------------------|
+
+// None for this class
 
 //-----------------------------------------------------------------------------|
 // PRIVATE CLASS METHODS
@@ -183,69 +177,77 @@ double DOUBLE_TAU = 6.283185307179586476;
 // PosCons: The array has been partitioned
 // RetVal:  The index of the pivot (partition)
 int quicksorter::partition( int* tgtArray, int pivotIndex, int left, int right ) {
+   // NOTE: Because the partition operates on array subsections, all index
+   // references must be based on the left and right bounds. Index [0] will
+   // likely not be included within the partition subset.
+   if( VERBOSE ) {
+      std::cout << "    partition( ) called: [ " << pivotIndex << " : " << left << " : " << right << " ]" << std::endl;
+   }
    // ------------------------------------|
    // STEP 0 - BASE CASE
    // ------------------------------------|
-   verbosePrintln( "Checking partition() base case..." );
+   verbosePrintln( "    Checking partition() base case..." );
 
    if( left == right ) {
-      verbosePrintln( "Partition base hit!" );
+      verbosePrintln( "    Partition base hit!" );
       return( left );
    }
    // ------------------------------------|
    // STEP 1 - MOVE THE PIVOT OUT OF THE WAY
    // ------------------------------------|
-   std::swap( tgtArray[0], tgtArray[pivotIndex] );
+   verbosePrintln( "    Partitioning..." );
+   std::swap( tgtArray[ left ], tgtArray[pivotIndex] );
    // Current location of the pivot
-   int retIndex = 0;
+   int pivotLocation = left;
    // The pivot value to compare against:
-   int pivotVal = tgtArray[0];
+   int pivotVal = tgtArray[ left ];
+
    // tgtArray:
    //    0    1    2    3    4    5    6    7    8    9   Index
    // +----+----+----+----+----+----+----+----+----+----+
    // | 50 |  < |  > |  < |  > |  < |  > |  < |  > |  < | Value
    // +----+----+----+----+----+----+----+----+----+----+
-   //    ^Left                                        ^Right
+   //    ^Left/pivotLocation                          ^Right
 
    // ------------------------------------|
    // STEP 2 - PARTITION THE REMAINING VALUES
    // ------------------------------------|
-   while( left < ( right - 1 ) ) {
-      if( tgtArray[left] <= pivotVal ) {
-         // Value at left index is on correct side of pivot, so do nothing
-         left++;
+   while( left < right ) {
+      // Decrement the right bound until it points to a "small" value
+      if( tgtArray[ right ] > pivotVal ) {
+         right--;
       }
-      else if ( tgtArray[left] > pivotVal ) {
-         if ( tgtArray[right] > pivotVal ) {
-            // Value at right index is on correct side of pivot, so do nothing
-            right--;
+      // Once a small value is found...
+      else if ( tgtArray[ right ] <= pivotVal ) {
+         // Increment the left bound until a large value is found
+         if ( tgtArray[ left ] <= pivotVal ) {
+            left++; 
          }
          // Both left and right point to mis-aligned values, so swap
-         else if ( tgtArray[right] <= pivotVal ) {
-            std::swap( tgtArray[left], tgtArray[right] );
-            left++;
+         else if ( tgtArray[ left ] >= pivotVal ) {
+            std::swap( tgtArray[ left ], tgtArray[ right ] );
          }
       }
-   } // Comparisons complete
+   } // Comparisons complete. Left pointer indicates the rightmost small value
    // tgtArray:
    //    0    1    2    3    4    5    6    7    8    9   Index
    // +----+----+----+----+----+----+----+----+----+----+
    // | 50 |  < |  < |  < |  < |  > |  > |  > |  > |  > | Value
    // +----+----+----+----+----+----+----+----+----+----+
-   //                        ^Left^Right
+   //                        ^Left
 
    // ------------------------------------|
    // STEP 3 - CORRECTLY PLACE THE PIVOT
    // ------------------------------------|
-   std::swap( tgtArray[0], tgtArray[left] );
-   retIndex = left;
-   // tgtArray:              |-retIndex
+   std::swap( tgtArray[ pivotLocation ], tgtArray[ left ] );
+   pivotLocation = left;
+   // tgtArray:              |-pivotLocation
    //    0    1    2    3    4    5    6    7    8    9   Index
    // +----+----+----+----+----+----+----+----+----+----+
    // |  < |  < |  < |  < | 50 |  > |  > |  > |  > |  > | Value
    // +----+----+----+----+----+----+----+----+----+----+
    //                        ^Left^Right
-   return( retIndex );
+   return( pivotLocation );
 } // Closing partition( int*, int, int, int )
 
 // (-) --------------------------------|
@@ -292,31 +294,47 @@ int quicksorter::selectPivotIndex( int* tgtArray, int left, int right ) {
 // PosCons: The array has been sorted from left to right bound
 // RetVal:  None - The sort is performed in situ
 void quicksorter::quicksort( int* tgtArray, int left, int right ) {
-   verbosePrint( "quicksort() called: " );
-   std::cout << left << " : " << right << std::endl;
+   if( VERBOSE ) {
+      std::cout << "quicksort( ) called: ( " << left << " : " << right << " )" << std::endl;
+   }
    // ------------------------------------|
    // STEP 0 - BASE CONDITION
    // ------------------------------------|
    // If the range is 0, this range is sorted by definition
    if( left >= right ) {
-      verbosePrintln( "quicksort() base case hit!" );
+      if( VERBOSE ) {
+         std::cout << "  Base case hit! ( " << left << " : " << right << " )" << std::endl;
+      }
       return;
    }
    // ------------------------------------|
    // STEP 1 - SELECT A PIVOT
    // ------------------------------------|
    int pivotIndex = quicksorter::selectPivotIndex( tgtArray, left, right );
+   if( VERBOSE ) {
+      std::cout << "  Pivot selected! [ @ " << pivotIndex << " : " << tgtArray[pivotIndex] << " ]" << std::endl;
+   }
    // ------------------------------------|
    // STEP 2 - PARTITION VALUES AROUND THE PIVOT
    // ------------------------------------|
    int partitionIndex = quicksorter::partition( tgtArray, pivotIndex, left, right );
+   if( VERBOSE ) {
+      std::cout << "  Partition placed! [ " << partitionIndex << " ]" << std::endl;
+      printArraySubset( tgtArray, left, right );
+   }
    // ------------------------------------|
    // STEP 3 - RECURSIVELY SORT THE LEFT
    // ------------------------------------|
+   if( VERBOSE ) {
+      std::cout << "  Recursing left... ( " << left << " : " << ( partitionIndex - 1 ) << " )" << std::endl;
+   }
    quicksorter::quicksort( tgtArray, left, ( partitionIndex - 1 ) );
    // ------------------------------------|
    // STEP 4 - RECURSIVELY SORT THE RIGHT
    // ------------------------------------|
+   if( VERBOSE ) {
+      std::cout << "  Recursing right... ( " << ( partitionIndex +1 ) << " : " << ( right ) << " )" << std::endl;
+   }
    quicksorter::quicksort( tgtArray, ( partitionIndex + 1 ), right );
 } // Closing quicksort( int*, int, int )
 
@@ -324,9 +342,13 @@ void quicksorter::quicksort( int* tgtArray, int left, int right ) {
 // CLASS GETTERS/SETTERS
 //-----------------------------------------------------------------------------|
 
+// None for this class
+
 //-----------------------------------------------------------------------------|
 // PUBLIC CLASS FIELDS
 //-----------------------------------------------------------------------------|
+
+// None for this class
 
 //-----------------------------------------------------------------------------|
 // PUBLIC CLASS METHODS
@@ -350,7 +372,6 @@ void quicksorter::quicksort( int* tgtArray, int size ) {
 //-----------------------------------------------------------------------------|
 
 int main( int argc, char* argv[] ) {
-   printHelloWorld( );
    std::string assertTest = "This is a test";
    assert( assertTest == "This is a test" );
    verbosePrintln( "Generating a random array..." );
@@ -406,25 +427,34 @@ int* makeRandomArray( int size, int min, int max ) {
 void printArray( std::string title, int* tgtArray, int size ) {
    std::cout << title << std::endl;
    // [ ###
-   std::cout << "[" << std::setw( 3 ) << tgtArray[0];
+   std::cout << "[" << std::setw( 3 ) << tgtArray[ 0 ];
    for( int i = 1 ; i < size ; i++ ) {
-      std::cout << " , " << tgtArray[i];
+      std::cout << " , " << tgtArray[ i ];
    }
    // [ ### , ### , ### ]
    std::cout << " ]" << std::endl;
 } // Closing printArray( )
 
 // (+) --------------------------------|
-// #printHelloWorld( )
+// #printArraySubset( int*, int, int )
 // ------------------------------------|
-// Desc:    Prints "Hello, World!" to console out
-// Params:  None
+// Desc:    Prints an array subset to console
+// Params:  int* arg1 - The target array to print
+//          int arg2 - The left-bound index
+//          int arg3 - The right-bound index
 // PreCons: None
 // PosCons: None
 // RetVal:  None
-void printHelloWorld( ) {
-   std::cout << "Hello, World!" << std::endl;
-} // Closing printHelloWorld( )
+void printArraySubset( int* tgtArray, int leftBound, int rightBound ) {
+   // [ ###
+   std::cout << "[" << std::setw( 3 ) << tgtArray[leftBound];
+   int range = rightBound - leftBound;
+   for( int i = 1 ; i <= range ; i++ ) {
+      std::cout << " , " << tgtArray[ i + leftBound ];
+   }
+   // [ ### , ### , ### ]
+   std::cout << " ]" << std::endl;
+} // Closing printArraySubset( )
 
 // (+) --------------------------------|
 // #verbosePrint( )
