@@ -1,0 +1,11 @@
+Indent: (3) spaces
+Curly Brace: Same line for opening, new line for closure
+   ie: else {
+       }
+Parentheses: No space against function or invoking clause, space between internal terms
+   ie: someFunction( argument );
+Braces: No space against invoking clause, space between internal terms
+   ie: someArray[ 0 ];
+Whitespace: Buffer all terms and operators
+   ie: variable = ( argument + argument );
+Line Width: 80 characters (soft recommendation)
