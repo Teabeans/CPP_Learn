@@ -26,7 +26,18 @@
 // FILE DESCRIPTION
 //-----------------------------------------------------------------------------|
 //
-// Implementation of the quicksort function
+// Implementation of the quicksort function (https://en.wikipedia.org/wiki/Quicksort)
+// Also called 'Partition-Exchange Sort', Quicksort functions by selecting a
+// pivot value, then partitioning values less than or greater than that pivot
+// to opposite halves of the array. The pivot is then placed between these two
+// halves, and the process recursively called to the left and right halves.
+// The main advantage of quicksort comes in the fact that upon placement of the
+// pivot, the pivot has been sorted to its correct position in the dataset.
+//
+// Stable?                   : No
+// Time Complexity (Best)    : O(n log n)
+// Time Complexity (Avergage): O(n log n)
+// Time Complexity (Worst)   : O(n^2)
 //
 
 //-----------------------------------------------------------------------------|
@@ -52,13 +63,13 @@
 //-----------------------------------------------------------------------------|
 //
 // The sorter is implemented here as a class. This is not necessary, and code
-// logic may be refactored as static methods.
+// logic for the sort may be refactored as static methods.
 //
 
 //-----------------------------------------------------------------------------|
 // LICENSE
 //-----------------------------------------------------------------------------|
-// 
+//
 // Refer to LICENSE.txt
 //
 
@@ -121,12 +132,15 @@
 // DECLARATIONS
 //-----------------------------------------------------------------------------|
 
+// (+) --------------------------------|
+// #quicksorter{ }
+// ------------------------------------|
+// Desc:    A tool class used to sort an array of elements.
 class quicksorter {
    private:
-   int partition( int* tgtArray, int pivotIndex, int left, int right );
+   int  partition( int* tgtArray, int pivotIndex, int left, int right );
    void quicksort( int* tgtArray, int left, int right );
    int  selectPivotIndex( int* tgtArray, int left, int right );
-
    public:
    void quicksort( int* tgtArray, int size );
 };
