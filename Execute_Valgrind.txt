@@ -1,0 +1,7 @@
+Valgrind: What is it
+
+To execute while searching for memory leaks:
+
+$ valgrind ./a.out -memcheck=full (TODO: Paraphrased, rewrite)
+
+Interpretation of results:
