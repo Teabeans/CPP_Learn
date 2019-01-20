@@ -55,21 +55,102 @@
 // ERRATA
 //-----------------------------------------------------------------------------|
 //
-// <Any other comments>
+// PBKDF2 HMAC SHA-256 test vectors from
+// https://stackoverflow.com/questions/5130513/pbkdf2-hmac-sha2-test-vectors
 //
+
+/*
+PBKDF2 HMAC-SHA256 Test Vectors
+
+Input:
+  P = "password" (8 octets)
+  S = "salt" (4 octets)
+  c = 1
+  dkLen = 32
+
+Output:
+  DK = 12 0f b6 cf fc f8 b3 2c
+       43 e7 22 52 56 c4 f8 37
+       a8 65 48 c9 2c cc 35 48
+       08 05 98 7c b7 0b e1 7b (32 octets)
+
+
+Input:
+  P = "password" (8 octets)
+  S = "salt" (4 octets)
+  c = 2
+  dkLen = 32
+
+Output:
+  DK = ae 4d 0c 95 af 6b 46 d3
+       2d 0a df f9 28 f0 6d d0
+       2a 30 3f 8e f3 c2 51 df
+       d6 e2 d8 5a 95 47 4c 43 (32 octets)
+
+
+Input:
+  P = "password" (8 octets)
+  S = "salt" (4 octets)
+  c = 4096
+  dkLen = 32
+
+Output:
+  DK = c5 e4 78 d5 92 88 c8 41
+       aa 53 0d b6 84 5c 4c 8d
+       96 28 93 a0 01 ce 4e 11
+       a4 96 38 73 aa 98 13 4a (32 octets)
+
+
+Input:
+  P = "password" (8 octets)
+  S = "salt" (4 octets)
+  c = 16777216
+  dkLen = 32
+
+Output:
+  DK = cf 81 c6 6f e8 cf c0 4d
+       1f 31 ec b6 5d ab 40 89
+       f7 f1 79 e8 9b 3b 0b cb
+       17 ad 10 e3 ac 6e ba 46 (32 octets)
+
+
+Input:
+  P = "passwordPASSWORDpassword" (24 octets)
+  S = "saltSALTsaltSALTsaltSALTsaltSALTsalt" (36 octets)
+  c = 4096
+  dkLen = 40
+
+Output:
+  DK = 34 8c 89 db cb d3 2b 2f
+       32 d8 14 b8 11 6e 84 cf
+       2b 17 34 7e bc 18 00 18
+       1c 4e 2a 1f b8 dd 53 e1
+       c6 35 51 8c 7d ac 47 e9 (40 octets)
+
+
+Input:
+  P = "pass\0word" (9 octets)
+  S = "sa\0lt" (5 octets)
+  c = 4096
+  dkLen = 16
+
+Output:
+  DK = 89 b6 9d 05 16 f8 29 89
+       3c 69 62 26 65 0a 86 87 (16 octets)
+*/
 
 //-----------------------------------------------------------------------------|
 // LICENSE
 //-----------------------------------------------------------------------------|
 // 
-// <License> or <Refer to LICENSE.txt>
+// Refer to LICENSE.txt
 //
 
 //-----------------------------------------------------------------------------|
 // CODE STANDARDS
 //-----------------------------------------------------------------------------|
 //
-// <Standards> or <Refer to CODESTANDARDS.txt>
+// Refer to CODESTANDARDS.txt
 //
 
 //-----------------------------------------------------------------------------|
@@ -93,7 +174,7 @@
 #include <iostream>              // For input/output (C++)
 // #include <stdio.h>            // For input/output (C)
 #include <cstring>               // Fpr strlen( )
-// #include <iomanip>            // For width-formatted outputs
+#include <iomanip>               // For width-formatted outputs
 // #include <fstream>            // For file-stream
 
 // MULTITHREADING
@@ -139,13 +220,14 @@
 //-----------------------------------------------------------------------------|
 
 int main( int argc, char* argv[] ) {
-   const char* password = "password";
-   int passLength = 8;
-   const char* theSalt = "salt";
-   int saltLength = 4;
-   int iterations = 10;
-   int hashLen = 32; // Will be 32 bit
-   unsigned char PBKDF2Result[32];
+   const char* password = "passwordPASSWORDpassword";
+   const char* theSalt = "saltSALTsaltSALTsaltSALTsaltSALTsalt";
+   int iterations = 4096;
+   int dkLen = 40; // Will be 32 byte eventually
+
+   int passLength = 24;
+   int saltLength = 36;
+   unsigned char PBKDF2Result[dkLen];
 
    // From https://www.openssl.org/docs/man1.1.0/crypto/PKCS5_PBKDF2_HMAC_SHA1.html
    PKCS5_PBKDF2_HMAC( password,
@@ -154,11 +236,14 @@ int main( int argc, char* argv[] ) {
                       saltLength,
                       iterations,
                       EVP_sha256(),
-                      hashLen,
+                      dkLen, // Desired byte-length of the derived key
                       PBKDF2Result );
 
-   for( int i = 0 ; i < 32 ; i++ ) {
-      std::cout << "( " << PBKDF2Result[i] << " )" << std::endl;
+   for( int i = 0 ; i < dkLen ; i++ ) {
+      if( i % 8 == 0 ) {
+         std::cout << std::endl;
+      }
+      std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)PBKDF2Result[i] << " ";
    }
    
    std::cout << std::endl;
