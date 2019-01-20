@@ -121,19 +121,7 @@
 // DECLARATIONS
 //-----------------------------------------------------------------------------|
 
-// Refer to <FileName>.h or
-// Field and method declarations go here
-class myClass {
-   private:
-   int aPrivateVariable;
-   void somePrivateMethod( );
-
-   public:
-   int aPublicVariable;
-   void someMethod( );
-};
-
-void aStaticMethod( );
+// None declared in the .cpp
 
 //-----------------------------------------------------------------------------|
 // DEFINES
@@ -168,7 +156,13 @@ double DOUBLE_TAU = 6.283185307179586476;
 // PRIVATE CLASS FIELDS
 //-----------------------------------------------------------------------------|
 
-int myClass::aPrivateVariable = 1;
+// None declared in the .cpp
+
+//-----------------------------------------------------------------------------|
+// CONSTRUCTORS / DESTRUCTORS
+//-----------------------------------------------------------------------------|
+
+// None for this class
 
 //-----------------------------------------------------------------------------|
 // PRIVATE CLASS METHODS
@@ -186,7 +180,7 @@ int myClass::aPrivateVariable = 1;
 // PUBLIC CLASS FIELDS
 //-----------------------------------------------------------------------------|
 
-// None for this class
+// None declared in the .cpp
 
 //-----------------------------------------------------------------------------|
 // PUBLIC CLASS METHODS
