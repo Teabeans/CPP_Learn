@@ -158,7 +158,7 @@ int main( int argc, char* argv[] ) {
                       PBKDF2Result );
 
    for( int i = 0 ; i < 32 ; i++ ) {
-      std::cout << PBKDF2Result[i];
+      std::cout << "( " << PBKDF2Result[i] << " )" << std::endl;
    }
    
    std::cout << std::endl;
