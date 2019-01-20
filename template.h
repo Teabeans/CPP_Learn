@@ -70,6 +70,13 @@
 //
 
 //-----------------------------------------------------------------------------|
+// INCLUDE GUARDS
+//-----------------------------------------------------------------------------|
+
+#ifndef <HEADER_TOKEN> // Checks if the <HEADER_TOKEN> is defined and halts if so
+#define <HEADER_TOKEN> // Defines a header by <HEADER_TOKEN>
+
+//-----------------------------------------------------------------------------|
 // IMPORTS / INCLUDES
 //-----------------------------------------------------------------------------|
 
@@ -177,5 +184,7 @@ class myClass {
 // Static functions do not have a 'this' pointer
 
 }; // Closing templateClass.h
+
+#endif // Denotes the end of the #define
 
 // End of file - <FileName>.<Extension>
