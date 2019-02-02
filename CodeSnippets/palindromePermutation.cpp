@@ -8,9 +8,6 @@
 // Modified: 2018.08.21
 //
 
-// TODO: Investigate use of a boolean isEven/isOdd toggle. Investigate use of
-// oddCount to avoid iterating over the count the alphabet
-
 /*
 1.4 - Palindrome Permutation() - P.91
 Given a string, write a function to check if it is a permutation of a palindrome. A palindrome is a word or phrase that is the same forwards and backwards. A permutation is a rearrangement of letters. The palindrome does not need to be limited to just dictionary words.
@@ -19,14 +16,21 @@ Example:
 Input: Tact Coa
 Output: True (permutations: "taco cat", "atco cta", etc.)
 
-Problem Setup and Assumptions:
-  A string may be represented as an array or linked list of chars.
-    Many languages also support the string as a class
-  A permutation is a rearrangement of characters in a string.
-  A palindrome reads the same forward as backward
-   - Ignoring case
-   - Ignoring whitespace
-  Assume valid chars from a-z and A-Z
+
+
+//-----------------------------------------------------------------------------|
+// PROBLEM SETUP AND ASSUMPTIONS
+//-----------------------------------------------------------------------------|
+
+A string may be represented as an array or linked list of chars.
+  Many languages also support the string as a class
+A permutation is a rearrangement of characters in a string.
+A palindrome reads the same forward as backward
+ - Ignoring case
+ - Ignoring whitespace
+Assume valid chars from a-z and A-Z
+
+
 
 //-----------------------------------------------------------------------------|
 // NAIVE, BRUTE FORCE, TERRIBAD APPROACH
@@ -64,6 +68,8 @@ then the string can be configured as a palindrome.
 2) A single counter can tally how many odd characters have been encountered
 3) At the conclusion of the scan, if the tally is greater than 1, no palindrome
   can be derived from the original string
+
+
 
 //-----------------------------------------------------------------------------|
 // TIME COMPLEXITY
@@ -115,6 +121,7 @@ Otherwise return true.
 
 #include <string>
 #include <iostream>
+#include <ctype.h> // For toupper( )
 
 // (+) --------------------------------|
 // #palindromePermutation(string)
@@ -139,16 +146,25 @@ bool palindromePermutation( std::string theString ) {
    // Iterate over the string, toggling the isEven table
    char currCharIndex;
    for ( int i = 0 ; i < theString.length( ) ; i++ ) {
-      currCharIndex = ( int )theString.at( i );
-      isEven[ currCharIndex ] = !isEven[ currCharIndex ];
-      // If we just switched to an even count...
-      if( isEven[ currCharIndex ] == true ) {
-         oddCounter--;
+
+      // If the character is a whitespace...
+      if( theString.at( i ) == ' ' ) {
+         // Do nothing
       }
       else {
-         oddCounter++;
+         currCharIndex = ( int )toupper( theString.at( i ) );
+         isEven[ currCharIndex ] = !isEven[ currCharIndex ];
+         // If we just switched to an even count...
+         if( isEven[ currCharIndex ] == true ) {
+            oddCounter--;
+         }
+         else {
+            oddCounter++;
+         }
       }
+
    } // Closing for - String has been parsed
+
    // If the oddCounter is 0 or 1, this is permutable
    if( oddCounter <= 1 ) {
       return( true );
@@ -176,7 +192,7 @@ bool palindromePermutation( std::string theString ) {
 // RetVal:  int - The exit code (0 for normal, -1 for error)
 int main( int argc, char* argv[ ] ) {
    std::cout << "Test of palindromePermutation( )" << std::endl;
-   bool test1 = palindromePermutation( "thisisapermutationthisisapermutationz" );
+   bool test1 = palindromePermutation( "THIS is a permutation this is a permutation z" );
    bool test2 = palindromePermutation( "thisisnotapermutation" );
    bool test3 = palindromePermutation( "TacocaT" ); // Trailing whitespace
    std::cout << "Test 1 : ( 1 expected )" << std::endl;
