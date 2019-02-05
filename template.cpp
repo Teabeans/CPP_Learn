@@ -113,6 +113,7 @@
 #include <sstream>               // http://www.cplusplus.com/reference/sstream/
 #include <utility>               // http://www.cplusplus.com/reference/utility/
 // #include <unistd.h>           // Provides access to the POSIX operating system AP
+#include <climits>               // http://www.cplusplus.com/reference/climits/
 
 // CLASS DECLARATIONS
 // #include "MyFile.h"
